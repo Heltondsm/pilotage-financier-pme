@@ -1,0 +1,33 @@
+name: pilotage_pme
+version: "1.0.0"
+profile: pilotage_pme
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+
+vars:
+  jours_prevision: 90        # l'horizon de la prévision de trésorerie
+  min_pairs: 20              # en dessous, le groupe de concurrents est élargi
+
+seeds:
+  pilotage_pme:
+    clients:
+      +column_types:       # « 75 » doit rester du texte (sinon « 01 » deviendrait 1)
+        departement: "{{ 'string' if target.type == 'bigquery' else 'varchar' }}"
+    naf_metiers:
+      +column_types:
+        code_naf: "{{ 'string' if target.type == 'bigquery' else 'varchar' }}"
+    budget:
+      +column_types:
+        mois: "{{ 'string' if target.type == 'bigquery' else 'varchar' }}"
+
+models:
+  pilotage_pme:
+    staging:
+      +materialized: view
+    intermediate:
+      +materialized: table
+    marts:
+      +materialized: table

@@ -1,0 +1,44 @@
+version: 2
+models:
+  - name: stg_factures
+    description: Une ligne par facture de Distrimat (TEST), sans doublons ni client inconnu.
+    columns:
+      - name: numero_facture
+        tests: [unique, not_null]
+      - name: code_client
+        tests:
+          - not_null
+          - relationships:
+              arguments: {to: ref('clients'), field: code_client}
+      - name: montant_ht
+        tests: [not_null]
+  - name: stg_paiements
+    description: Les paiements des clients rattachés à une facture.
+    columns:
+      - name: numero_paiement
+        tests: [unique, not_null]
+      - name: numero_facture
+        tests:
+          - relationships:
+              arguments: {to: ref('stg_factures'), field: numero_facture}
+  - name: stg_achats
+    columns:
+      - name: numero_achat
+        tests: [unique, not_null]
+  - name: stg_annonces
+    description: Les vraies annonces du Bodacc, rattachées à un code client ou fournisseur.
+    columns:
+      - name: id_annonce
+        tests: [unique, not_null]
+  - name: stg_bilans
+    description: Les vrais bilans, un par entreprise et par exercice.
+    tests:
+      - combinaison_unique:
+          arguments: {colonnes: ['siren', 'date_cloture']}
+    columns:
+      - name: siren
+        tests: [not_null]
+  - name: stg_entreprises
+    columns:
+      - name: siren
+        tests: [unique, not_null]

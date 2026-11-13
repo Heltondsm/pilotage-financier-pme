@@ -1,0 +1,33 @@
+{
+  "name": "Pilotage PME",
+  "dataColors": ["#08306B", "#6BAED6", "#2171B5", "#A50F15", "#E6550D", "#B7791F", "#737373", "#C6DBEF"],
+  "foreground": "#1B1B1B",
+  "foregroundNeutralSecondary": "#737373",
+  "background": "#FFFFFF",
+  "tableAccent": "#2171B5",
+  "good": "#08306B",
+  "neutral": "#737373",
+  "bad": "#A50F15",
+  "textClasses": {
+    "callout": {"fontSize": 40, "fontFace": "Segoe UI Bold", "color": "#08306B"},
+    "title": {"fontSize": 20, "fontFace": "Segoe UI Semibold", "color": "#08306B"},
+    "header": {"fontSize": 15, "fontFace": "Segoe UI Semibold", "color": "#08306B"},
+    "label": {"fontSize": 15, "fontFace": "Segoe UI", "color": "#1B1B1B"}
+  },
+  "visualStyles": {
+    "*": {
+      "*": {
+        "background": [{"show": true, "color": {"solid": {"color": "#FFFFFF"}}, "transparency": 0}],
+        "border": [{"show": true, "color": {"solid": {"color": "#C6DBEF"}}, "radius": 6}],
+        "title": [{"fontColor": {"solid": {"color": "#08306B"}}, "fontSize": 20, "fontFamily": "Segoe UI Semibold", "alignment": "left"}],
+        "subTitle": [{"show": false}],
+        "dropShadow": [{"show": false}]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [{"color": {"solid": {"color": "#EEF2F7"}}, "transparency": 0}]
+      }
+    }
+  }
+}

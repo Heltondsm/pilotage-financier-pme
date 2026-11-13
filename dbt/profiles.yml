@@ -1,0 +1,21 @@
+pilotage_pme:
+  target: local
+  outputs:
+    local:                       # sur ton Mac, dans un fichier DuckDB
+      type: duckdb
+      path: ../entrepot.duckdb
+      schema: pilotage
+      threads: 4
+    backtest:                    # le même fichier DuckDB, dans un schéma à part (voir backtest.py)
+      type: duckdb
+      path: ../entrepot.duckdb
+      schema: pilotage_backtest
+      threads: 4
+    bigquery:                    # dans BigQuery (Google Cloud)
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('GCP_PROJET') }}"
+      keyfile: "{{ env_var('GCP_CLE') }}"
+      dataset: pilotage
+      location: EU
+      threads: 4

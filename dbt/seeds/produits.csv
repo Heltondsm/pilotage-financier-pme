@@ -1,0 +1,121 @@
+code_produit,famille,prix_vente_ht,taux_marge,poids_famille
+P101,Ciment et béton,35.6,0.239,0.2
+P102,Ciment et béton,73.24,0.245,0.2
+P103,Ciment et béton,4.88,0.248,0.2
+P104,Ciment et béton,20.08,0.209,0.2
+P105,Ciment et béton,194.74,0.212,0.2
+P106,Ciment et béton,22.77,0.224,0.2
+P107,Ciment et béton,27.33,0.243,0.2
+P108,Ciment et béton,11.42,0.233,0.2
+P109,Ciment et béton,19.74,0.234,0.2
+P110,Ciment et béton,9.19,0.232,0.2
+P111,Ciment et béton,21.61,0.211,0.2
+P112,Ciment et béton,23.33,0.255,0.2
+P113,Ciment et béton,16.74,0.19,0.2
+P114,Ciment et béton,20.31,0.207,0.2
+P115,Ciment et béton,15.49,0.228,0.2
+P201,Plâtre et cloisons,16.27,0.242,0.15
+P202,Plâtre et cloisons,41.71,0.236,0.15
+P203,Plâtre et cloisons,55.86,0.298,0.15
+P204,Plâtre et cloisons,21.47,0.299,0.15
+P205,Plâtre et cloisons,25.66,0.302,0.15
+P206,Plâtre et cloisons,15.15,0.296,0.15
+P207,Plâtre et cloisons,161.38,0.289,0.15
+P208,Plâtre et cloisons,83.45,0.271,0.15
+P209,Plâtre et cloisons,62.25,0.266,0.15
+P210,Plâtre et cloisons,2.74,0.233,0.15
+P211,Plâtre et cloisons,11.22,0.237,0.15
+P212,Plâtre et cloisons,64.82,0.278,0.15
+P213,Plâtre et cloisons,48.54,0.295,0.15
+P214,Plâtre et cloisons,25.05,0.234,0.15
+P215,Plâtre et cloisons,20.78,0.268,0.15
+P301,Isolation,38.2,0.26,0.14
+P302,Isolation,17.86,0.297,0.14
+P303,Isolation,49.37,0.264,0.14
+P304,Isolation,25.69,0.275,0.14
+P305,Isolation,6.71,0.325,0.14
+P306,Isolation,75.0,0.339,0.14
+P307,Isolation,11.56,0.293,0.14
+P308,Isolation,49.05,0.337,0.14
+P309,Isolation,22.92,0.347,0.14
+P310,Isolation,178.51,0.347,0.14
+P311,Isolation,22.63,0.297,0.14
+P312,Isolation,21.87,0.3,0.14
+P313,Isolation,15.13,0.338,0.14
+P314,Isolation,47.99,0.344,0.14
+P315,Isolation,54.77,0.264,0.14
+P401,Bois et panneaux,34.22,0.298,0.13
+P402,Bois et panneaux,53.32,0.245,0.13
+P403,Bois et panneaux,22.6,0.305,0.13
+P404,Bois et panneaux,42.12,0.326,0.13
+P405,Bois et panneaux,34.72,0.307,0.13
+P406,Bois et panneaux,48.07,0.316,0.13
+P407,Bois et panneaux,23.02,0.288,0.13
+P408,Bois et panneaux,43.6,0.256,0.13
+P409,Bois et panneaux,47.1,0.245,0.13
+P410,Bois et panneaux,14.9,0.273,0.13
+P411,Bois et panneaux,30.28,0.276,0.13
+P412,Bois et panneaux,19.37,0.287,0.13
+P413,Bois et panneaux,17.13,0.314,0.13
+P414,Bois et panneaux,10.92,0.246,0.13
+P415,Bois et panneaux,22.08,0.286,0.13
+P501,Carrelage et sols,22.08,0.327,0.12
+P502,Carrelage et sols,9.49,0.331,0.12
+P503,Carrelage et sols,36.11,0.298,0.12
+P504,Carrelage et sols,17.69,0.297,0.12
+P505,Carrelage et sols,39.09,0.315,0.12
+P506,Carrelage et sols,16.64,0.369,0.12
+P507,Carrelage et sols,107.68,0.387,0.12
+P508,Carrelage et sols,67.11,0.334,0.12
+P509,Carrelage et sols,16.0,0.322,0.12
+P510,Carrelage et sols,23.76,0.325,0.12
+P511,Carrelage et sols,5.24,0.341,0.12
+P512,Carrelage et sols,121.17,0.371,0.12
+P513,Carrelage et sols,19.89,0.325,0.12
+P514,Carrelage et sols,32.33,0.367,0.12
+P515,Carrelage et sols,19.11,0.316,0.12
+P601,Couverture et toiture,30.78,0.278,0.1
+P602,Couverture et toiture,67.95,0.295,0.1
+P603,Couverture et toiture,25.62,0.293,0.1
+P604,Couverture et toiture,22.17,0.261,0.1
+P605,Couverture et toiture,9.12,0.247,0.1
+P606,Couverture et toiture,101.31,0.301,0.1
+P607,Couverture et toiture,7.05,0.238,0.1
+P608,Couverture et toiture,14.69,0.27,0.1
+P609,Couverture et toiture,29.23,0.234,0.1
+P610,Couverture et toiture,52.29,0.256,0.1
+P611,Couverture et toiture,27.39,0.268,0.1
+P612,Couverture et toiture,90.59,0.252,0.1
+P613,Couverture et toiture,33.78,0.261,0.1
+P614,Couverture et toiture,42.08,0.311,0.1
+P615,Couverture et toiture,25.17,0.29,0.1
+P701,Outillage,5.49,0.336,0.08
+P702,Outillage,9.2,0.371,0.08
+P703,Outillage,24.76,0.408,0.08
+P704,Outillage,36.5,0.44,0.08
+P705,Outillage,57.22,0.431,0.08
+P706,Outillage,49.86,0.358,0.08
+P707,Outillage,14.02,0.403,0.08
+P708,Outillage,14.41,0.392,0.08
+P709,Outillage,119.69,0.389,0.08
+P710,Outillage,14.69,0.418,0.08
+P711,Outillage,35.94,0.413,0.08
+P712,Outillage,21.45,0.354,0.08
+P713,Outillage,6.21,0.398,0.08
+P714,Outillage,14.14,0.418,0.08
+P715,Outillage,24.83,0.391,0.08
+P801,Quincaillerie,21.98,0.436,0.08
+P802,Quincaillerie,13.17,0.399,0.08
+P803,Quincaillerie,18.62,0.396,0.08
+P804,Quincaillerie,12.65,0.381,0.08
+P805,Quincaillerie,21.39,0.373,0.08
+P806,Quincaillerie,81.03,0.459,0.08
+P807,Quincaillerie,21.89,0.427,0.08
+P808,Quincaillerie,32.61,0.462,0.08
+P809,Quincaillerie,15.87,0.454,0.08
+P810,Quincaillerie,12.97,0.449,0.08
+P811,Quincaillerie,14.58,0.396,0.08
+P812,Quincaillerie,15.13,0.397,0.08
+P813,Quincaillerie,7.66,0.408,0.08
+P814,Quincaillerie,26.71,0.42,0.08
+P815,Quincaillerie,10.98,0.41,0.08

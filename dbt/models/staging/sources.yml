@@ -1,0 +1,21 @@
+version: 2
+sources:
+  - name: brut
+    schema: "{{ 'pilotage_brut' if target.type == 'bigquery' else 'brut' }}"
+    tables:
+      - name: factures
+        description: Les lignes de factures de Distrimat (données de TEST), recalculées chaque nuit.
+      - name: paiements
+        description: Les paiements reçus des clients (TEST).
+      - name: achats
+        description: Les factures des fournisseurs et leur date de paiement (TEST).
+      - name: charges
+        description: Les charges fixes mensuelles (salaires, loyers…) (TEST).
+      - name: correspondance
+        description: Le lien code client ou fournisseur -> vrai SIREN. Privé, jamais affiché.
+      - name: annonces
+        description: Les vraies annonces du Bodacc sur les clients et fournisseurs, une ligne par annonce et par collecte.
+      - name: bilans
+        description: Les vrais bilans de toutes les entreprises (ratios INPI / BCE).
+      - name: entreprises
+        description: L'annuaire Sirene allégé (entreprises actives avec au moins un bilan).

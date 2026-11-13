@@ -1,0 +1,67 @@
+version: 2
+models:
+  - name: kpi_mensuels
+    description: Question 1. Ventes, marge, budget, croissance et DSO de Distrimat, mois par mois (TEST).
+    columns:
+      - name: mois
+        tests: [unique, not_null]
+  - name: int_factures_statut
+    columns:
+      - name: numero_facture
+        tests: [unique, not_null]
+      - name: statut
+        tests:
+          - accepted_values:
+              arguments: {values: ['payée', 'à échoir', 'en retard', 'douteuse']}
+  - name: balance_agee
+    description: Question 2. Ce que chaque client doit, par ancienneté du retard ; clients sous code seulement.
+    columns:
+      - name: code_client
+        tests: [unique, not_null]
+  - name: tresorerie_jour
+    description: Le solde de la banque, jour par jour.
+    columns:
+      - name: jour
+        tests: [unique, not_null]
+      - name: solde
+        tests: [not_null]
+  - name: prevision_tresorerie
+    description: Question 3. Le solde prévu chaque jour des 90 prochains jours.
+    columns:
+      - name: jour
+        tests: [unique, not_null]
+      - name: solde_prevu
+        tests: [not_null]
+  - name: alertes_clients
+    description: Question 4. Les clients à surveiller tout de suite (Bodacc réel ou gros retard).
+  - name: benchmark_entreprises
+    description: Question 5. Chaque entreprise (données réelles) face aux médianes et quartiles de ses concurrents.
+    columns:
+      - name: siren
+        tests: [unique, not_null]
+  - name: diagnostic_entreprises
+    description: Question 5. Les constats X-Y-Z et 1 ou 2 recommandations par entreprise.
+    columns:
+      - name: siren
+        tests: [unique, not_null]
+      - name: recommandation_1
+        tests: [not_null]
+  - name: position_distrimat
+    description: Distrimat (12 derniers mois) face aux vrais grossistes en matériaux de sa taille, une ligne par indicateur.
+    columns:
+      - name: indicateur
+        tests: [unique, not_null]
+      - name: distrimat
+        tests: [not_null]
+  - name: ventes_familles
+    description: Question 1, le détail. Les ventes et la marge de chaque famille de produits, face au budget, mois par mois.
+    tests:
+      - combinaison_unique:
+          arguments: {colonnes: ['mois', 'famille']}
+  - name: diagnostic_powerbi
+    description: La page « Le diagnostic » de Power BI. Les entreprises de 10 salariés et plus, indicateurs, secteur, constats, recommandations.
+    columns:
+      - name: siren
+        tests: [unique, not_null]
+  - name: qualite_rejets
+    description: Ce que le nettoyage a écarté ou corrigé.

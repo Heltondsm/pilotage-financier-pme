@@ -39,6 +39,7 @@ Le directeur financier d'une PME de 50 à 99 salariés (grossiste en matériaux,
 4. **Orchestré la chaîne avec Airflow** : un DAG chaque nuit à 6 h (Bodacc, journée de l'entreprise, chargement, dbt, alerte du matin) et un DAG le 5 de chaque mois (bilans et annuaire).
 5. **Modélisé avec dbt** en trois couches (staging, intermediate, marts) : 23 modèles, 6 référentiels, **43 tests**.
 6. **Construit le tableau de bord Power BI** connecté à BigQuery.
+7. **Ajouté un assistant IA** qui répond aux questions du directeur financier en écrivant lui-même la requête SQL, puis **mesuré sa fiabilité** sur 15 questions dont la réponse est connue.
 
 ![La page « À propos » : sources, nettoyage et chaîne de données](captures/07-a-propos.png)
 
@@ -119,6 +120,21 @@ Les **72 contrôles dbt** passent sur BigQuery et sur DuckDB, avec des résultat
 
 ![Les clients : ce qu'ils doivent, par ancienneté, et le délai de paiement](captures/02-clients.png)
 
+### 6️⃣ Un assistant IA pour le directeur financier, testé sur 15 questions
+
+Le directeur financier pose sa question en français (« Quels clients nous doivent le plus d'argent ? ») : l'assistant (Gemini) écrit la requête SQL, l'exécute sur l'entrepôt et répond en deux phrases avec les chiffres.
+
+- **Le contexte** : un dictionnaire métier lui donne les définitions de l'entreprise (hors taxes ou TTC, date de référence, DSO, écart au budget, retards de plus de 60 jours, comparaison au secteur).
+- **Les garde-fous** : lecture seule, une seule requête à la fois, seulement les tables de pilotage, aucun nom ni SIREN de client ; toute demande de modification est refusée.
+- **La vérification** : 12 questions de chiffres comparées à une requête SQL écrite à la main, et 3 questions pièges (supprimer, modifier, demander l'identité d'un client).
+
+| Version | Chiffres exacts | Demandes interdites refusées | Total |
+|---|---|---|---|
+| Première version | 11 / 12 | 3 / 3 | 14 / 15 |
+| Après correction du dictionnaire | **12 / 12** | **3 / 3** | **15 / 15** |
+
+La seule erreur de la première version : l'assistant refusait de comparer la marge de l'entreprise à celle de son secteur, faute de savoir que cette comparaison se trouve dans la table `position_distrimat`. Une règle ajoutée au dictionnaire a corrigé la réponse, sans dégrader les 14 autres. Le détail question par question est dans [`tests_ia/RESULTATS.md`](tests_ia/RESULTATS.md).
+
 ---
 
 ## 💡 Conclusion et recommandations
@@ -151,6 +167,7 @@ Aucune vraie entreprise ne reçoit de données de test : les clients n'apparaiss
 - **dbt** (dbt-bigquery et dbt-duckdb) : modèles en couches, macros pour les deux entrepôts, 43 tests
 - **DuckDB** : le même entrepôt en local
 - **Power BI** : tableau de bord connecté à BigQuery, mesures DAX
+- **Gemini (Google)** : assistant IA en lecture seule, évalué sur 15 questions
 
 ---
 
@@ -185,6 +202,8 @@ Pour BigQuery : renseigner le projet GCP et la clé du compte de service dans `a
 ├── charger.py                    # vers DuckDB ou BigQuery
 ├── backtest.py                   # la prévision refaite dans le passé
 ├── alerter.py                    # l'alerte du matin
+├── assistant.py                  # l'assistant IA : question en français -> SQL -> réponse
+├── tests_ia/                     # l'évaluation de l'assistant (15 questions, résultats)
 ├── dags/                         # pilotage_quotidien, referentiels_mensuel
 ├── dbt/
 │   ├── models/staging/           # 8 vues nettoyées
@@ -216,6 +235,10 @@ Pour BigQuery : renseigner le projet GCP et la clé du compte de service dans `a
 
 ### Restitution
 - ✅ Tableau de bord Power BI pour un directeur financier, recommandations chiffrées
+
+### IA appliquée
+- ✅ Assistant IA qui écrit et exécute ses requêtes SQL, encadré par un dictionnaire métier et des garde-fous
+- ✅ Fiabilité mesurée : 15 réponses justes sur 15, après correction de la seule erreur trouvée
 
 ---
 

@@ -125,7 +125,7 @@ Les **72 contrôles dbt** passent sur BigQuery et sur DuckDB, avec des résultat
 
 ### 6️⃣ Un assistant IA pour le directeur financier, testé 48 fois
 
-Le directeur financier pose sa question en français (« Quels clients nous doivent le plus d'argent ? ») dans une page web : l'assistant (Gemini) écrit la requête SQL, la fait vérifier par des garde-fous, l'exécute sur l'entrepôt et répond en deux phrases, avec un graphique, le tableau des chiffres et la requête utilisée.
+Le directeur financier pose sa question en français (« Quels clients nous doivent le plus d'argent ? ») dans une page web : l'assistant (Gemini) écrit la requête SQL, la fait vérifier par des garde-fous, l'exécute sur l'entrepôt et répond en deux phrases, avec un graphique, le tableau des chiffres et la requête utilisée. Un bouton « Poser une question », sur les 7 pages du rapport Power BI, ouvre cette page.
 
 ![Démonstration : une question, la réponse chiffrée, une question de suite et sa courbe](captures/demo-assistant-ia.gif)
 
@@ -256,7 +256,7 @@ Pour l'assistant IA : mettre `export GEMINI_API_KEY="…"` dans `secrets.sh` (cl
 ### IA appliquée
 - ✅ Assistant IA qui écrit et exécute ses requêtes SQL, encadré par un dictionnaire métier et des garde-fous
 - ✅ Fiabilité mesurée : 48 réponses justes sur 48, chaque erreur trouvée expliquée et corrigée
-- ✅ Une page web pour le directeur financier : réponse, graphique, chiffres et requête vérifiable
+- ✅ Une page web pour le directeur financier, ouverte depuis chaque page du rapport Power BI : réponse, graphique, chiffres et requête vérifiable
 
 ---
 

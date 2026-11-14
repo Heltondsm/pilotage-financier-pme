@@ -199,8 +199,10 @@ function graphique(r) {
     svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
     [min, (min + max) / 2, max].forEach(v => { add("line", {x1: m.g, x2: W - m.d, y1: y(v), y2: y(v), stroke: "#E2E8F0"}); add("text", {x: m.g - 8, y: y(v) + 4, "text-anchor": "end"}, nombre(v)); });
     add("path", {d: pts.map((p, i) => (i ? "L" : "M") + x(i) + " " + y(p[1])).join(" "), fill: "none", stroke: "#376DAE", "stroke-width": 2.5, "stroke-linejoin": "round"});
-    const pas = Math.ceil(pts.length / 6);
-    pts.forEach((p, i) => { if (i % pas === 0 || i === pts.length - 1) add("text", {x: x(i), y: H - 8, "text-anchor": "middle"}, date(p[0]).slice(3)); });
+    const pas = Math.ceil(pts.length / 6), jours = (new Date(pts[pts.length - 1][0]) - new Date(pts[0][0])) / 864e5;
+    const etiquette = v => jours > 200 ? date(v).slice(3) : date(v).slice(0, 5);      // mois/année, ou jour/mois si la période est courte
+    pts.forEach((p, i) => { const dernier = i === pts.length - 1;
+      if ((i % pas === 0 && pts.length - 1 - i >= pas / 2) || dernier) add("text", {x: x(i), y: H - 8, "text-anchor": dernier ? "end" : "middle"}, etiquette(p[0])); });
     const dern = pts.length - 1; add("circle", {cx: x(dern), cy: y(pts[dern][1]), r: 4.5, fill: "#376DAE"});
     add("text", {x: x(dern), y: y(pts[dern][1]) - 10, "text-anchor": "end", class: "valeur"}, nombre(pts[dern][1]));
     return svg;

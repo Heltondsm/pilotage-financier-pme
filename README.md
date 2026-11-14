@@ -127,7 +127,7 @@ Les **72 contrôles dbt** passent sur BigQuery et sur DuckDB, avec des résultat
 
 Le directeur financier pose sa question en français (« Quels clients nous doivent le plus d'argent ? ») dans une page web : l'assistant (Gemini) écrit la requête SQL, la fait vérifier par des garde-fous, l'exécute sur l'entrepôt et répond en deux phrases, avec un graphique, le tableau des chiffres et la requête utilisée.
 
-![L'assistant IA : la question, la réponse chiffrée, le graphique et la preuve de fiabilité](captures/08-assistant-ia.jpg)
+![Démonstration : une question, la réponse chiffrée, une question de suite et sa courbe](captures/demo-assistant-ia.gif)
 
 - **Le contexte** : un dictionnaire métier lui donne les définitions de l'entreprise (hors taxes ou TTC, date de référence, DSO sur 12 mois, marge brute et marge d'EBE, encours à date, comparaison au secteur).
 - **Les garde-fous** : lecture seule, une seule requête à la fois, seulement les tables de pilotage, aucun nom ni SIREN de client ; toute demande de modification est refusée.

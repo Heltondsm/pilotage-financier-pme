@@ -6,6 +6,7 @@ Garde-fous : il ne peut que LIRE, et seulement les tables de pilotage de Distrim
     export GEMINI_API_KEY="ta-clé"          (créée sur aistudio.google.com, sans carte bancaire)
     python assistant.py "Quels clients nous doivent le plus d'argent ?"
 """
+import functools
 import json
 import os
 import re
@@ -24,20 +25,33 @@ TABLES_AUTORISEES = ["kpi_mensuels", "ventes_familles", "balance_agee", "tresore
 DICTIONNAIRE = """Règles à respecter :
 - Les montants de ventes, de marge et de budget sont HORS TAXES (ca_ht, budget_ht, marge_brute_ht) ;
   ce que doivent les clients et la banque sont TOUTES TAXES COMPRISES (…_ttc, solde).
-- La date d'aujourd'hui pour les calculs est la DERNIÈRE date des données (max(mois) ou max(jour)),
-  jamais la date du système. « Les 12 derniers mois » = les 12 mois jusqu'à max(mois) compris.
+- La date d'aujourd'hui pour les calculs est la DERNIÈRE date réelle des données : max(jour) de tresorerie_jour,
+  ou max(mois) de kpi_mensuels ; jamais la date du système. « Les 12 derniers mois » = EXACTEMENT 12 lignes
+  mensuelles, jusqu'à max(mois) compris : écris  mois > max(mois) - interval 12 month  (strictement supérieur ;
+  avec >= on prend 13 mois).
+- prevision_tresorerie contient DÉJÀ les 90 prochains jours (une ligne par jour) : ne la filtre jamais sur son
+  propre max(jour). Le point bas = la ligne où solde_prevu est le plus petit (order by solde_prevu limit 1), avec
+  SON jour, pas min(jour).
 - Écart au budget = (somme des ventes - somme du budget) / somme du budget, en pourcentage, seulement
   sur les lignes où budget_ht n'est pas vide (le budget commence en 2025).
 - Taux de marge = somme de marge_brute_ht / somme de ca_ht.
+- Attention, deux marges différentes : la MARGE BRUTE (ventes - achats, kpi_mensuels.taux_marge_pct, autour de
+  30 %) et la MARGE D'EBE (EBE / ventes, autour de 3 %). La marge d'EBE de l'entreprise n'existe que dans
+  position_distrimat (ordre 2, colonne distrimat). Ne compare JAMAIS la marge brute aux chiffres du secteur.
 - DSO = délai de paiement des clients en jours (kpi_mensuels.dso_jours) ; la moyenne des 12 derniers mois
   est celle qu'on compare au secteur.
 - Un client « en retard de plus de 60 jours » : retard_61_90 + retard_plus_90 (balance_agee).
+- Ce que les clients doivent AUJOURD'HUI (total, par client, par ancienneté) = balance_agee (somme de encours_ttc).
+  kpi_mensuels.encours_clients_ttc = ce qu'ils devaient à la FIN de chaque mois : seulement pour une évolution
+  mois par mois ou si la question cite un mois précis.
 - La comparaison au secteur est dans position_distrimat : une ligne par indicateur (ordre 1 = croissance des
   ventes, 2 = marge EBE / ventes, 3 = délai de paiement des clients, 4 = délai de paiement des fournisseurs) ;
   la colonne distrimat = l'entreprise, q1 / mediane / q3 = le secteur (nb_entreprises comparées).
 - Renvoie TOUJOURS, en plus des libellés, les chiffres qui justifient la réponse (montants, pourcentages).
-- Si la question demande de modifier, supprimer ou créer quoi que ce soit, ou une information absente des
-  tables (les SIREN, les noms des clients), réponds seulement par le mot : REFUS"""
+- « Quels clients… », « quel client… » : réponds avec code_client (C0001…), c'est autorisé ; ce n'est PAS une
+  demande de nom.
+- Réponds seulement par le mot REFUS si la question demande de modifier, supprimer ou créer quoi que ce soit,
+  ou demande explicitement le nom, la raison sociale ou le SIREN d'un client, ou une information absente des tables."""
 
 REPONSE_REFUS = ("Je ne peux que lire les tables de pilotage, sans rien modifier, et les clients n'y apparaissent "
                  "que sous un code (C0001…) : leur nom et leur SIREN ne sont pas accessibles.")
@@ -67,6 +81,7 @@ def demander_a_gemini(texte):
     return "".join(p.get("text", "") for p in parties if not p.get("thought")).strip()
 
 
+@functools.lru_cache(maxsize=2)          # les colonnes ne changent pas : une seule lecture par entrepôt
 def description_des_tables(cible):
     """La liste des tables autorisées et de leurs colonnes, à donner à Gemini."""
     lignes = []

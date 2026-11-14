@@ -39,7 +39,7 @@ Le directeur financier d'une PME de 50 à 99 salariés (grossiste en matériaux,
 4. **Orchestré la chaîne avec Airflow** : un DAG chaque nuit à 6 h (Bodacc, journée de l'entreprise, chargement, dbt, alerte du matin) et un DAG le 5 de chaque mois (bilans et annuaire).
 5. **Modélisé avec dbt** en trois couches (staging, intermediate, marts) : 23 modèles, 6 référentiels, **43 tests**.
 6. **Construit le tableau de bord Power BI** connecté à BigQuery.
-7. **Ajouté un assistant IA** qui répond aux questions du directeur financier en écrivant lui-même la requête SQL, puis **mesuré sa fiabilité** sur 15 questions dont la réponse est connue.
+7. **Ajouté un assistant IA** qui répond aux questions du directeur financier en écrivant lui-même la requête SQL, dans une page web, puis **mesuré sa fiabilité** : 48 réponses justes sur 48.
 
 ![La page « À propos » : sources, nettoyage et chaîne de données](captures/07-a-propos.png)
 
@@ -120,20 +120,26 @@ Les **72 contrôles dbt** passent sur BigQuery et sur DuckDB, avec des résultat
 
 ![Les clients : ce qu'ils doivent, par ancienneté, et le délai de paiement](captures/02-clients.png)
 
-### 6️⃣ Un assistant IA pour le directeur financier, testé sur 15 questions
+### 6️⃣ Un assistant IA pour le directeur financier, testé 48 fois
 
-Le directeur financier pose sa question en français (« Quels clients nous doivent le plus d'argent ? ») : l'assistant (Gemini) écrit la requête SQL, l'exécute sur l'entrepôt et répond en deux phrases avec les chiffres.
+Le directeur financier pose sa question en français (« Quels clients nous doivent le plus d'argent ? ») dans une page web : l'assistant (Gemini) écrit la requête SQL, la fait vérifier par des garde-fous, l'exécute sur l'entrepôt et répond en deux phrases, avec un graphique, le tableau des chiffres et la requête utilisée.
 
-- **Le contexte** : un dictionnaire métier lui donne les définitions de l'entreprise (hors taxes ou TTC, date de référence, DSO, écart au budget, retards de plus de 60 jours, comparaison au secteur).
+- **Le contexte** : un dictionnaire métier lui donne les définitions de l'entreprise (hors taxes ou TTC, date de référence, DSO sur 12 mois, marge brute et marge d'EBE, encours à date, comparaison au secteur).
 - **Les garde-fous** : lecture seule, une seule requête à la fois, seulement les tables de pilotage, aucun nom ni SIREN de client ; toute demande de modification est refusée.
-- **La vérification** : 12 questions de chiffres comparées à une requête SQL écrite à la main, et 3 questions pièges (supprimer, modifier, demander l'identité d'un client).
+- **La vérification** : 13 questions de chiffres comparées à une requête SQL écrite à la main, et 3 questions pièges, le tout posé 3 fois de suite, car une IA ne répond pas toujours de la même façon.
 
-| Version | Chiffres exacts | Demandes interdites refusées | Total |
-|---|---|---|---|
-| Première version | 11 / 12 | 3 / 3 | 14 / 15 |
-| Après correction du dictionnaire | **12 / 12** | **3 / 3** | **15 / 15** |
+**Résultat : 48 réponses justes sur 48** (39 chiffres exacts sur 39, 9 demandes interdites refusées sur 9). Pour y arriver, chaque erreur trouvée par les tests a été expliquée, corrigée dans le dictionnaire, puis retestée :
 
-La seule erreur de la première version : l'assistant refusait de comparer la marge de l'entreprise à celle de son secteur, faute de savoir que cette comparaison se trouve dans la table `position_distrimat`. Une règle ajoutée au dictionnaire a corrigé la réponse, sans dégrader les 14 autres. Le détail question par question est dans [`tests_ia/RESULTATS.md`](tests_ia/RESULTATS.md).
+| Erreur trouvée | Cause | Correction |
+|---|---|---|
+| Refusait de comparer la marge au secteur | il ne savait pas où se trouve la comparaison | la table du secteur décrite dans le dictionnaire |
+| Refusait « quels clients nous doivent le plus » | il croyait qu'on lui demandait des noms | règle : le code client est autorisé, le nom ne l'est pas |
+| Point bas de trésorerie faux | il prenait la fin de la prévision comme « date du jour » | règle sur la date de référence et sur le point bas |
+| Marge brute (30 %) comparée à la marge d'EBE du secteur (3,5 %) | deux marges confondues | règle qui sépare les deux marges |
+| Encours de fin octobre au lieu d'aujourd'hui | deux chiffres proches, à deux dates | règle sur la bonne source selon la date |
+| DSO calculé sur 13 mois au lieu de 12 | `>=` au lieu de `>` dans le filtre de dates | règle écrite avec la bonne condition |
+
+Le détail question par question est dans [`tests_ia/RESULTATS.md`](tests_ia/RESULTATS.md). En entreprise, la page serait hébergée sur Google Cloud (Cloud Run) et lirait directement BigQuery, avec Gemini via Vertex AI pour que les données restent dans le projet de l'entreprise.
 
 ---
 
@@ -167,7 +173,8 @@ Aucune vraie entreprise ne reçoit de données de test : les clients n'apparaiss
 - **dbt** (dbt-bigquery et dbt-duckdb) : modèles en couches, macros pour les deux entrepôts, 43 tests
 - **DuckDB** : le même entrepôt en local
 - **Power BI** : tableau de bord connecté à BigQuery, mesures DAX
-- **Gemini (Google)** : assistant IA en lecture seule, évalué sur 15 questions
+- **Gemini (Google)** : assistant IA en lecture seule, évalué sur 48 réponses
+- **FastAPI, HTML et JavaScript** : la page de l'assistant
 
 ---
 
@@ -189,6 +196,8 @@ airflow standalone
 
 Pour BigQuery : renseigner le projet GCP et la clé du compte de service dans `activer.sh`, puis `python charger.py --cible bigquery --referentiels` et `dbt build --profiles-dir . --target bigquery`.
 
+Pour l'assistant IA : mettre `export GEMINI_API_KEY="…"` dans `secrets.sh` (clé gratuite sur aistudio.google.com), puis `python serveur_assistant.py` et ouvrir http://localhost:8501. Les tests : `python -m tests_ia.evaluer_assistant --tours 3`.
+
 ---
 
 ## 📂 Structure du projet
@@ -203,7 +212,9 @@ Pour BigQuery : renseigner le projet GCP et la clé du compte de service dans `a
 ├── backtest.py                   # la prévision refaite dans le passé
 ├── alerter.py                    # l'alerte du matin
 ├── assistant.py                  # l'assistant IA : question en français -> SQL -> réponse
-├── tests_ia/                     # l'évaluation de l'assistant (15 questions, résultats)
+├── serveur_assistant.py          # le serveur de la page de l'assistant (FastAPI)
+├── interface/                    # la page de l'assistant (HTML, CSS, JavaScript)
+├── tests_ia/                     # l'évaluation de l'assistant (16 questions, 3 tours)
 ├── dags/                         # pilotage_quotidien, referentiels_mensuel
 ├── dbt/
 │   ├── models/staging/           # 8 vues nettoyées
@@ -238,7 +249,8 @@ Pour BigQuery : renseigner le projet GCP et la clé du compte de service dans `a
 
 ### IA appliquée
 - ✅ Assistant IA qui écrit et exécute ses requêtes SQL, encadré par un dictionnaire métier et des garde-fous
-- ✅ Fiabilité mesurée : 15 réponses justes sur 15, après correction de la seule erreur trouvée
+- ✅ Fiabilité mesurée : 48 réponses justes sur 48, chaque erreur trouvée expliquée et corrigée
+- ✅ Une page web pour le directeur financier : réponse, graphique, chiffres et requête vérifiable
 
 ---
 

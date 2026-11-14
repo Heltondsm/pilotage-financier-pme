@@ -6,3 +6,8 @@ google-cloud-bigquery==3.46.2
 pandas==3.1.0
 pyarrow==26.0.0
 duckdb==2.0.0
+
+
+# Le serveur de l assistant IA (page HTML dans interface/)
+fastapi==0.136.3
+uvicorn==0.52.4

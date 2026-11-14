@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Assistant du directeur financier</title>
+<link rel="stylesheet" href="polices.css">
+<style>
+:root{
+  --bleu:#376DAE; --bleu-fonce:#2A5A94; --bleu-clair:#DCE8F6; --bleu-ciel:#8FB6E6; --marine:#16192A;
+  --fond:#F4F7FB; --texte:#1A1F2E; --gris:#5E6A7E; --ligne:#E2E8F0; --vert:#1F7A4D; --vert-clair:#E3F2EA;
+  --rouge:#A50F15; --ease:cubic-bezier(.2,.7,.2,1);
+  --titre:"Gambetta",Georgia,serif; --ui:"General Sans",-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;background:var(--fond);color:var(--texte);font:16px/1.55 var(--ui)}
+.page{max-width:1180px;margin:0 auto;padding:44px 28px 60px;display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:36px;align-items:start}
+@media (max-width:960px){.page{grid-template-columns:1fr;padding:28px 16px 48px}.cote{order:-1}}
+
+/* En-tête */
+.tag{display:block;font-family:var(--titre);font-weight:600;font-size:13px;color:var(--bleu);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+h1{font-family:var(--titre);font-weight:600;font-size:clamp(30px,4vw,44px);line-height:1.1;margin:0 0 12px;color:var(--marine);letter-spacing:-.01em}
+h1 em{font-style:normal;color:var(--bleu)}
+.chapo{color:var(--gris);font-size:17px;max-width:640px;margin:0 0 26px}
+
+/* Suggestions */
+.puces{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 22px}
+.puce{border:1px solid var(--ligne);background:#fff;border-radius:999px;padding:9px 16px;font:500 14.5px var(--ui);color:var(--texte);cursor:pointer;transition:transform .2s var(--ease),border-color .2s,box-shadow .2s}
+.puce:hover{transform:translateY(-2px);border-color:var(--bleu-ciel);box-shadow:0 6px 18px rgba(55,109,174,.12)}
+.puce:focus-visible,.envoyer:focus-visible,summary:focus-visible{outline:2px solid var(--bleu);outline-offset:2px}
+
+/* Conversation */
+.fil{display:flex;flex-direction:column;gap:18px;margin-bottom:22px}
+.moi{align-self:flex-end;max-width:80%;background:var(--bleu);color:#fff;border-radius:18px 18px 4px 18px;padding:12px 18px;font-weight:500;animation:monte .35s var(--ease) both}
+.carte{background:#fff;border:1px solid var(--ligne);border-radius:18px;padding:24px 26px;animation:monte .45s var(--ease) both}
+@keyframes monte{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.moi,.carte{animation:none}}
+.carte .tag{margin-bottom:8px}
+.phrase{font-size:18px;line-height:1.55;margin:0 0 14px}
+.pastilles{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.pastille{display:inline-flex;align-items:center;gap:6px;background:var(--bleu-clair);color:var(--bleu-fonce);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:600}
+.pastille.ok{background:var(--vert-clair);color:var(--vert)}
+.pastille.refus{background:#FBE9EA;color:var(--rouge)}
+.graphe{margin:18px 0 6px}
+.graphe svg{display:block;width:100%;height:auto;overflow:visible}
+.graphe text{font-family:var(--ui);font-size:12.5px;fill:var(--gris)}
+.graphe .valeur{fill:var(--texte);font-weight:600}
+details{border-top:1px solid var(--ligne);margin-top:14px;padding-top:12px}
+summary{cursor:pointer;font-weight:600;color:var(--bleu);font-size:14.5px;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"›";display:inline-block;margin-right:8px;transition:transform .2s}
+details[open] summary::before{transform:rotate(90deg)}
+.tableau{overflow-x:auto;margin-top:12px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;color:var(--gris);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--ligne);padding:8px 10px;white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid var(--ligne);white-space:nowrap}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+pre{background:var(--marine);color:#E6EDF7;border-radius:12px;padding:16px 18px;overflow-x:auto;font:13px/1.6 var(--mono);margin:12px 0 0}
+.lien{background:none;border:0;padding:0;margin-top:12px;color:var(--bleu);font:600 14px var(--ui);cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.suite{margin-top:18px}
+.suite .tag{font-size:12px;color:var(--gris)}
+.attente{display:flex;align-items:center;gap:12px;color:var(--gris)}
+.points span{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--bleu);margin-right:4px;animation:saut 1s infinite}
+.points span:nth-child(2){animation-delay:.15s}.points span:nth-child(3){animation-delay:.3s}
+@keyframes saut{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-4px)}}
+
+/* Zone de saisie */
+.saisie{position:sticky;bottom:18px;display:flex;gap:10px;background:#fff;border:1px solid var(--ligne);border-radius:16px;padding:8px 8px 8px 18px;box-shadow:0 10px 30px rgba(22,25,42,.08)}
+.saisie input{flex:1;border:0;outline:0;font:500 16px var(--ui);color:var(--texte);background:transparent;min-width:0}
+.envoyer{border:0;border-radius:10px;background:var(--bleu);color:#fff;font:600 15px var(--titre);padding:11px 20px;cursor:pointer;transition:background .2s,transform .2s var(--ease)}
+.envoyer:hover{background:var(--bleu-fonce);transform:translateY(-1px)}
+.envoyer:disabled{opacity:.55;cursor:progress;transform:none}
+
+/* Colonne de droite */
+.cote{position:sticky;top:28px;display:flex;flex-direction:column;gap:16px}
+.cote .carte{padding:22px 22px;animation:none}
+.score{font-family:var(--titre);font-weight:600;font-size:52px;line-height:1;color:var(--marine)}
+.score small{font-size:22px;color:var(--gris)}
+.barre{height:8px;border-radius:99px;background:var(--bleu-clair);overflow:hidden;margin:6px 0 2px}
+.barre i{display:block;height:100%;background:var(--bleu);border-radius:99px}
+.mini{display:flex;justify-content:space-between;font-size:13.5px;color:var(--gris);margin-top:10px}
+.cote ul{list-style:none;margin:0;padding:0;display:grid;gap:10px;font-size:14.5px}
+.cote li{display:flex;gap:10px;align-items:flex-start}
+.cote li b{color:var(--marine)}
+.etapes{counter-reset:e;display:grid;gap:12px;font-size:14.5px}
+.etapes div{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
+.etapes div::before{counter-increment:e;content:counter(e);width:26px;height:26px;border-radius:50%;background:var(--bleu-clair);color:var(--bleu-fonce);font:600 13px var(--titre);display:grid;place-items:center}
+.note{font-size:12.5px;color:var(--gris);line-height:1.5}
+</style>
+</head>
+<body>
+<div class="page">
+  <main>
+    <span class="tag">Assistant IA · Pilotage financier</span>
+    <h1>Posez votre question.<br><em>L'assistant répond avec les chiffres.</em></h1>
+    <p class="chapo">En français, comme à un collègue : l'assistant écrit la requête SQL, la fait vérifier par ses garde-fous, l'exécute sur l'entrepôt et vous répond en deux phrases.</p>
+
+    <div class="puces" id="exemples"></div>
+    <div class="fil" id="fil" aria-live="polite"></div>
+
+    <form class="saisie" id="formulaire">
+      <input id="champ" type="text" autocomplete="off" maxlength="300"
+             placeholder="Ex. : quels clients ont plus de 60 jours de retard ?" aria-label="Votre question">
+      <button class="envoyer" id="envoyer" type="submit">Demander</button>
+    </form>
+  </main>
+
+  <aside class="cote">
+    <div class="carte">
+      <span class="tag">Fiabilité mesurée</span>
+      <div class="score">48<small> / 48</small></div>
+      <div class="note" style="margin-top:6px">réponses justes : 16 questions de test posées 3 fois</div>
+      <div class="mini"><span>Chiffres exacts</span><b>39 / 39</b></div>
+      <div class="barre"><i style="width:100%"></i></div>
+      <div class="mini"><span>Demandes interdites refusées</span><b>9 / 9</b></div>
+      <div class="barre"><i style="width:100%"></i></div>
+    </div>
+    <div class="carte">
+      <span class="tag">Garde-fous</span>
+      <ul>
+        <li>🔒<span><b>Lecture seule</b> : rien ne peut être modifié ni supprimé.</span></li>
+        <li>📋<span><b>Tables de pilotage</b> uniquement, une requête à la fois.</span></li>
+        <li>🙈<span><b>Aucun nom ni SIREN</b> de client : seulement un code.</span></li>
+        <li>📖<span><b>Dictionnaire métier</b> : HT ou TTC, DSO, budget, secteur.</span></li>
+      </ul>
+    </div>
+    <div class="carte">
+      <span class="tag">Comment ça marche</span>
+      <div class="etapes">
+        <div><span>Vous posez la question en français.</span></div>
+        <div><span>L'IA écrit la requête SQL ; les garde-fous la vérifient.</span></div>
+        <div><span>L'entrepôt calcule, l'IA répond avec les chiffres.</span></div>
+      </div>
+      <p class="note" style="margin:14px 0 0">Données de test de l'entreprise Distrimat · modèle Gemini.</p>
+    </div>
+  </aside>
+</div>
+
+<script>
+const EXEMPLES = [
+  "Quels clients nous doivent le plus d'argent ?",
+  "Quel est l'écart des ventes au budget sur le dernier mois ?",
+  "Quel est le point le plus bas de trésorerie prévu dans les 90 prochains jours ?",
+  "Comment se situe notre marge face à la médiane du secteur ?"
+];
+const SUITES = [
+  [["client","doivent","retard","dso","procedure"], ["Combien les clients nous doivent-ils avec plus de 60 jours de retard ?", "Quels clients en procédure collective nous doivent de l'argent ?"]],
+  [["tresorerie","banque","solde","prevu"], ["Combien avons-nous en banque au dernier jour connu ?", "Quelle est l'évolution du solde prévu semaine par semaine ?"]],
+  [["vente","budget","chiffre","marge brute","famille"], ["Quelles familles de produits sont le plus en retard sur leur budget sur 12 mois ?", "Quelle est l'évolution des ventes mois par mois sur l'année ?"]],
+  [["secteur","mediane","concurrent","ebe"], ["Notre délai de paiement des clients est-il meilleur que celui du secteur ?", "Notre croissance est-elle meilleure que celle du secteur ?"]]
+];
+const NOMS = {code_client:"Client",activite:"Code activité",metier:"Métier",departement:"Département",encours_ttc:"Doit (TTC)",
+  nb_factures_ouvertes:"Factures ouvertes",non_echu:"Non échu",retard_1_30:"Retard 1-30 j",retard_31_60:"Retard 31-60 j",
+  retard_61_90:"Retard 61-90 j",retard_plus_90:"Retard > 90 j",douteux:"Douteux",retard_max_jours:"Retard max (j)",
+  procedure_bodacc:"Procédure (Bodacc)",date_procedure:"Date de la procédure",action:"Action",retard_plus_60_ttc:"Retard > 60 j (TTC)",
+  mois:"Mois",jour:"Jour",famille:"Famille",ca_ht:"Ventes (HT)",marge_brute_ht:"Marge brute (HT)",taux_marge_pct:"Taux de marge (%)",
+  budget_ht:"Budget (HT)",ecart_budget_pct:"Écart au budget (%)",ca_ht_n_1:"Ventes N-1 (HT)",croissance_pct:"Croissance (%)",
+  nb_factures:"Factures",encours_clients_ttc:"Encours clients (TTC)",dso_jours:"DSO (jours)",entrees:"Entrées",sorties:"Sorties",
+  solde:"Solde",solde_prevu:"Solde prévu",entrees_attendues:"Entrées attendues",sorties_attendues:"Sorties attendues",
+  indicateur:"Indicateur",unite:"Unité",distrimat:"Distrimat",q1:"1er quartile",mediane:"Médiane du secteur",q3:"3e quartile",
+  lecture:"Lecture",nb_entreprises:"Entreprises comparées"};
+
+const $ = s => document.querySelector(s);
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const sansAccents = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+const nom = c => NOMS[c] || (c.charAt(0).toUpperCase() + c.slice(1).replace(/_/g, " "));
+const nf0 = new Intl.NumberFormat("fr-FR", {maximumFractionDigits: 0});
+const nf1 = new Intl.NumberFormat("fr-FR", {maximumFractionDigits: 1});
+const nombre = v => v == null ? "" : (Math.abs(v) >= 1000 ? nf0.format(v) : nf1.format(v));
+const date = v => v ? v.split("-").reverse().join("/") : "";
+const cellule = (v, type) => type === "nombre" ? nombre(v) : type === "date" ? date(v) : (v === true ? "oui" : v === false ? "non" : (v ?? ""));
+
+function puces(conteneur, questions) {
+  questions.forEach(q => { const b = el("button", "puce", q); b.type = "button"; b.addEventListener("click", () => poser(q)); conteneur.append(b); });
+}
+puces($("#exemples"), EXEMPLES);
+
+function suites(question) {
+  const q = sansAccents(question);
+  for (const [mots, props] of SUITES) if (mots.some(m => q.includes(m))) return props.filter(p => sansAccents(p) !== q);
+  return EXEMPLES.slice(0, 2);
+}
+
+/* Graphique : courbe si une colonne de dates, barres horizontales pour un classement court */
+function graphique(r) {
+  const n = r.types.map((t, i) => t === "nombre" ? i : -1).filter(i => i >= 0);
+  const d = r.types.indexOf("date"), t = r.types.indexOf("texte");
+  if (!n.length || r.lignes.length < 2) return null;
+  const W = 640, ns = "http://www.w3.org/2000/svg", svg = document.createElementNS(ns, "svg");
+  const add = (tag, attrs, txt) => { const e = document.createElementNS(ns, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (txt != null) e.textContent = txt; svg.append(e); return e; };
+  if (d >= 0 && r.lignes.length >= 3) {
+    const col = n[0], pts = r.lignes.map(l => [l[d], l[col]]).filter(p => p[1] != null).sort((a, b) => a[0] < b[0] ? -1 : 1);
+    const H = 220, m = {g: 70, d: 16, h: 16, b: 30}, vals = pts.map(p => p[1]);
+    const min = Math.min(...vals), max = Math.max(...vals), pad = (max - min) * 0.1 || 1;
+    const x = i => m.g + i * (W - m.g - m.d) / Math.max(1, pts.length - 1);
+    const y = v => m.h + (max + pad - v) * (H - m.h - m.b) / (max - min + 2 * pad);
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    [min, (min + max) / 2, max].forEach(v => { add("line", {x1: m.g, x2: W - m.d, y1: y(v), y2: y(v), stroke: "#E2E8F0"}); add("text", {x: m.g - 8, y: y(v) + 4, "text-anchor": "end"}, nombre(v)); });
+    add("path", {d: pts.map((p, i) => (i ? "L" : "M") + x(i) + " " + y(p[1])).join(" "), fill: "none", stroke: "#376DAE", "stroke-width": 2.5, "stroke-linejoin": "round"});
+    const pas = Math.ceil(pts.length / 6);
+    pts.forEach((p, i) => { if (i % pas === 0 || i === pts.length - 1) add("text", {x: x(i), y: H - 8, "text-anchor": "middle"}, date(p[0]).slice(3)); });
+    const dern = pts.length - 1; add("circle", {cx: x(dern), cy: y(pts[dern][1]), r: 4.5, fill: "#376DAE"});
+    add("text", {x: x(dern), y: y(pts[dern][1]) - 10, "text-anchor": "end", class: "valeur"}, nombre(pts[dern][1]));
+    return svg;
+  }
+  if (t >= 0 && r.lignes.length <= 15) {
+    const col = n[n.length - 1], lignes = r.lignes.filter(l => l[col] != null).slice(0, 10);
+    const max = Math.max(...lignes.map(l => Math.abs(l[col]))) || 1, h = 30, g = 150, H = lignes.length * h + 8;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    lignes.forEach((l, i) => {
+      const w = Math.max(3, Math.abs(l[col]) / max * (W - g - 110));
+      add("text", {x: g - 10, y: i * h + 19, "text-anchor": "end"}, String(l[t]).slice(0, 22));
+      add("rect", {x: g, y: i * h + 6, width: w, height: 18, rx: 4, fill: i === 0 ? "#376DAE" : "#8FB6E6"});
+      add("text", {x: g + w + 8, y: i * h + 19, class: "valeur"}, nombre(l[col]));
+    });
+    return svg;
+  }
+  return null;
+}
+
+function tableau(r) {
+  const tab = el("table"), tete = el("tr");
+  r.colonnes.forEach(c => tete.append(el("th", null, nom(c))));
+  const tete2 = el("thead"); tete2.append(tete); tab.append(tete2);
+  const corps = el("tbody");
+  r.lignes.forEach(l => { const tr = el("tr"); l.forEach((v, i) => tr.append(el("td", r.types[i] === "nombre" ? "n" : null, cellule(v, r.types[i])))); corps.append(tr); });
+  tab.append(corps);
+  const boite = el("div", "tableau"); boite.append(tab); return boite;
+}
+
+function csv(r) {
+  const echappe = v => /[;"\n]/.test(String(v)) ? '"' + String(v).replace(/"/g, '""') + '"' : String(v);
+  const lignes = [r.colonnes.map(nom).join(";"), ...r.lignes.map(l => l.map((v, i) => echappe(r.types[i] === "nombre" && v != null ? String(v).replace(".", ",") : cellule(v, r.types[i]))).join(";"))];
+  const lien = el("a"); lien.href = URL.createObjectURL(new Blob(["﻿" + lignes.join("\n")], {type: "text/csv"}));
+  lien.download = "reponse_assistant.csv"; lien.click();
+}
+
+function carteReponse(question, r) {
+  const c = el("article", "carte");
+  c.append(el("span", "tag", r.statut === "refus" ? "Demande refusée" : "Réponse"));
+  c.append(el("p", "phrase", r.phrase));
+  const p = el("div", "pastilles");
+  if (r.statut === "ok") { p.append(el("span", "pastille ok", "✓ Requête vérifiée par les garde-fous")); p.append(el("span", "pastille", "⏱ " + nf1.format(r.duree) + " s")); }
+  if (r.statut === "refus") p.append(el("span", "pastille refus", "🔒 Bloquée par les garde-fous"));
+  if (p.childNodes.length) c.append(p);
+  if (r.statut === "ok" && r.lignes && r.lignes.length) {
+    const g = graphique(r); if (g) { const b = el("div", "graphe"); b.append(g); c.append(b); }
+    const d1 = el("details"); d1.append(el("summary", null, `Voir les chiffres (${r.lignes.length} ligne${r.lignes.length > 1 ? "s" : ""})`));
+    d1.append(tableau(r)); const t = el("button", "lien", "Télécharger le tableau (CSV)"); t.type = "button"; t.addEventListener("click", () => csv(r)); d1.append(t); c.append(d1);
+  }
+  if (r.sql) { const d2 = el("details"); d2.append(el("summary", null, "Voir la requête SQL écrite par l'IA")); d2.append(el("pre", null, r.sql)); c.append(d2); }
+  if (r.statut === "ok") { const s = el("div", "suite"); s.append(el("span", "tag", "Pour aller plus loin")); const z = el("div", "puces"); puces(z, suites(question)); s.append(z); c.append(s); }
+  return c;
+}
+
+async function poser(question) {
+  question = question.trim(); if (!question || $("#envoyer").disabled) return;
+  $("#exemples").hidden = true; $("#champ").value = ""; $("#envoyer").disabled = true;
+  $("#fil").append(el("div", "moi", question));
+  const attente = el("article", "carte attente"); attente.innerHTML = '<span class="points"><span></span><span></span><span></span></span>';
+  attente.append(el("span", null, "L'assistant écrit sa requête, la vérifie et l'exécute…")); $("#fil").append(attente);
+  attente.scrollIntoView({behavior: "smooth", block: "center"});
+  let r;
+  try {
+    const rep = await fetch("/api/question", {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({question})});
+    r = await rep.json();
+  } catch (e) { r = {statut: "echec", phrase: "Le serveur de l'assistant ne répond pas. Est-il bien lancé (python serveur_assistant.py) ?"}; }
+  attente.replaceWith(carteReponse(question, r));
+  $("#envoyer").disabled = false; $("#champ").focus();
+  $("#fil").lastElementChild.scrollIntoView({behavior: "smooth", block: "start"});
+}
+$("#formulaire").addEventListener("submit", e => { e.preventDefault(); poser($("#champ").value); });
+</script>
+</body>
+</html>

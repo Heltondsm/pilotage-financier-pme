@@ -1,4 +1,4 @@
-# 📊 Pilotage financier d'une PME : trésorerie, impayés et comparaison au secteur
+# 📊 Pilotage financier d'une PME : trésorerie, impayés, comparaison au secteur et assistant IA
 
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Airflow](https://img.shields.io/badge/Airflow-3-017CEE?style=flat-square&logo=apacheairflow&logoColor=white)
@@ -6,10 +6,12 @@
 ![BigQuery](https://img.shields.io/badge/BigQuery-Google_Cloud-4285F4?style=flat-square&logo=googlebigquery&logoColor=white)
 ![DuckDB](https://img.shields.io/badge/DuckDB-FFF000?style=flat-square&logo=duckdb&logoColor=black)
 ![Power BI](https://img.shields.io/badge/Power_BI-F2C811?style=flat-square&logoColor=black)
+![Gemini](https://img.shields.io/badge/IA-Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white)
+![Tests IA](https://img.shields.io/badge/assistant_IA-48%2F48_réponses_justes-22c55e?style=flat-square)
 ![Tests](https://img.shields.io/badge/72_contrôles_dbt-passing-22c55e?style=flat-square)
 ![Status](https://img.shields.io/badge/Status-Completed-22c55e?style=flat-square)
 
-Un grossiste en matériaux d'Île-de-France voulait savoir chaque matin où en sont ses ventes, qui lui doit de l'argent, combien il aura en banque dans 90 jours et s'il fait mieux que ses concurrents. **Une chaîne Airflow, dbt et BigQuery recalcule tout chaque nuit, et la prévision de trésorerie tombe à 4,8 % du solde réel à 30 jours.**
+Un grossiste en matériaux d'Île-de-France voulait savoir chaque matin où en sont ses ventes, qui lui doit de l'argent, combien il aura en banque dans 90 jours et s'il fait mieux que ses concurrents. **Une chaîne Airflow, dbt et BigQuery recalcule tout chaque nuit, la prévision de trésorerie tombe à 4,8 % du solde réel à 30 jours, et un assistant IA répond à ses questions en français : 48 réponses justes sur 48 aux tests.**
 
 ![La trésorerie : solde réel, prévision à 90 jours et semaines à risque](captures/03-tresorerie.png)
 
@@ -28,6 +30,7 @@ Le directeur financier d'une PME de 50 à 99 salariés (grossiste en matériaux,
 | 3 | Combien aurons-nous en banque dans 90 jours ? | `prevision_tresorerie`, `tresorerie_jour` |
 | 4 | Quel client risque de ne pas nous payer ? | `alertes_clients` |
 | 5 | Sommes-nous meilleurs ou moins bons que nos concurrents ? | `position_distrimat`, `benchmark_entreprises` |
+| 6 | Puis-je avoir un chiffre tout de suite, sans attendre une analyse ? | l'assistant IA (toutes les tables de pilotage) |
 
 ---
 
@@ -139,7 +142,7 @@ Le directeur financier pose sa question en français (« Quels clients nous doiv
 | Encours de fin octobre au lieu d'aujourd'hui | deux chiffres proches, à deux dates | règle sur la bonne source selon la date |
 | DSO calculé sur 13 mois au lieu de 12 | `>=` au lieu de `>` dans le filtre de dates | règle écrite avec la bonne condition |
 
-Le détail question par question est dans [`tests_ia/RESULTATS.md`](tests_ia/RESULTATS.md). En entreprise, la page serait hébergée sur Google Cloud (Cloud Run) et lirait directement BigQuery, avec Gemini via Vertex AI pour que les données restent dans le projet de l'entreprise.
+Les tests tournent sur l'entrepôt local (données au 05/11/2026) ; le détail question par question est dans [`tests_ia/RESULTATS.md`](tests_ia/RESULTATS.md). En entreprise, la page serait hébergée sur Google Cloud (Cloud Run) et lirait directement BigQuery, avec Gemini via Vertex AI pour que les données restent dans le projet de l'entreprise.
 
 ---
 
@@ -150,6 +153,7 @@ Le détail question par question est dans [`tests_ia/RESULTATS.md`](tests_ia/RES
 1. **Déclarer sans attendre les créances des 38 clients en procédure** auprès du mandataire : le délai légal est de deux mois après la publication au Bodacc.
 2. **Relancer en priorité les 44 clients en alerte** (1,69 million d'euros), en commençant par les retards de plus de 90 jours.
 3. **Garder l'avance sur les fournisseurs** : l'entreprise les paie 3 jours plus tard que la médiane, c'est de la trésorerie gagnée sans pénalité tant que les délais légaux sont tenus.
+4. **Utiliser l'assistant IA pour explorer, le tableau de bord pour décider** : l'assistant donne un chiffre en quelques secondes et montre sa requête, mais les chiffres présentés en comité de direction restent ceux du rapport Power BI recontrôlé.
 
 ---
 
